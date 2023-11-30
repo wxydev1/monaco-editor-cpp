@@ -1,3 +1,5 @@
+# 用 monaco-editor 编写 c/c++ 代码，底层用到了 clangd 作为 language server protocal，支持智能补全、跳转等功能
+
 prerequisites:
 1. install llvm/clang
 
