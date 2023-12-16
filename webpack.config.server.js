@@ -3,6 +3,8 @@ module.exports = {
   mode: 'development',
   entry: {
     server: './src/server.ts',
+    mserver: './src/m/main.ts',
+    mindex: './src/m/index.ts',
   },
   output: {
     filename: '[name].js',
@@ -15,7 +17,10 @@ module.exports = {
     rules: [
       {
         test: [/\.tsx$/, /\.ts$/],
-        use: 'ts-loader',
+        loader: 'ts-loader',
+        options: {
+          configFile: "tsconfig.node.json"
+        },
         exclude: [/node_modules/],
       },
     ],

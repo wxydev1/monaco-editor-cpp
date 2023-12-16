@@ -32,7 +32,7 @@ export const launchLanguageServer = (
 ) => {
   // start the language server as an external process
 
-  const clangdPath = path.join(process.cwd(), 'bin/clangd.exe');
+  const clangdPath = "C:/Program Files/LLVM/bin/clangd.exe"
 
   const reader = new WebSocketMessageReader(socket);
   const writer = new WebSocketMessageWriter(socket);

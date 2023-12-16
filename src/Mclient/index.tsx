@@ -1,14 +1,9 @@
-import {
-  RegisteredFileSystemProvider,
-  RegisteredMemoryFile,
-  registerFileSystemOverlay,
-} from '@codingame/monaco-vscode-files-service-override';
+import getConfigurationServiceOverride from '@codingame/monaco-vscode-configuration-service-override';
 import * as monaco from 'monaco-editor';
 import { editor } from 'monaco-editor';
 import 'monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution';
 import { MonacoLanguageClient, initServices } from 'monaco-languageclient';
 import { useEffect, useRef } from 'react';
-
 import * as vscode from 'vscode';
 import {
   CloseAction,
@@ -20,17 +15,12 @@ import {
   WebSocketMessageWriter,
   toSocket,
 } from 'vscode-ws-jsonrpc';
-import { createConfiguredEditor, createModelReference } from 'vscode/monaco';
+import { ExtensionHostKind, registerExtension } from 'vscode/extensions';
+import { createConfiguredEditor } from 'vscode/monaco';
 import { createUrl } from './client-commons';
 let languageClient: MonacoLanguageClient;
-declare var URL1;
-declare var URL2;
-declare var URL3;
-declare var content1;
-declare var content2;
-declare var content3;
-const languageId = 'cpp';
-
+const languageId = 'm';
+declare var URL3: string;
 const createWebSocket = (url: string): WebSocket => {
   const webSocket = new WebSocket(url);
   webSocket.onopen = async () => {
@@ -63,6 +53,10 @@ const createLanguageClient = (
         error: () => ({ action: ErrorAction.Continue }),
         closed: () => ({ action: CloseAction.DoNotRestart }),
       },
+
+      synchronize: {
+        fileEvents: [vscode.workspace.createFileSystemWatcher('**')],
+      },
     },
     // create a language client connection from the JSON RPC connection on demand
     connectionProvider: {
@@ -73,52 +67,40 @@ const createLanguageClient = (
   });
 };
 
-const Editor = () => {
+const MEditor = () => {
   const editorContainer = useRef<HTMLDivElement>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor>(null);
 
   async function init() {
-    await initServices();
+    await initServices({
+      userServices: {
+        ...getConfigurationServiceOverride(),
+      },
+      debugLogging: true,
+    });
 
-    const fileSystemProvider = new RegisteredFileSystemProvider(false);
-    fileSystemProvider.registerFile(
-      new RegisteredMemoryFile(vscode.Uri.file(URL1), content1),
-    );
-    fileSystemProvider.registerFile(
-      new RegisteredMemoryFile(vscode.Uri.file(URL2), content2),
-    );
-    fileSystemProvider.registerFile(
-      new RegisteredMemoryFile(vscode.Uri.file(URL3), content3),
-    );
-
-    registerFileSystemOverlay(1, fileSystemProvider);
-
-    // const model1 = monaco.editor.createModel(
-    //   content1,
-    //   languageId,
-    //   vscode.Uri.file(URL1),
-    // );
-    // const model2 = monaco.editor.createModel(
-    //   content2,
-    //   languageId,
-    //   vscode.Uri.file(URL2),
-    // );
-
-    // const model3 = monaco.editor.createModel(
-    //   content3,
-    //   languageId,
-    //   vscode.Uri.file(URL3),
-    // );
-    const model1 = await createModelReference(vscode.Uri.file(URL1));
-    model1.object.setLanguageId(languageId)
-    const model2 = await createModelReference(vscode.Uri.file(URL2));
-    model2.object.setLanguageId(languageId)
-    const model3 = await createModelReference(vscode.Uri.file(URL3));
-    model3.object.setLanguageId(languageId)
+    const extension = {
+      name: 'c-client',
+      publisher: 'monaco-languageclient-project',
+      version: '1.0.0',
+      engines: {
+        vscode: '^1.78.0',
+      },
+      contributes: {
+        languages: [
+          {
+            id: languageId,
+            aliases: ['matlab'],
+            extensions: ['.m'],
+          },
+        ],
+      },
+    };
+    registerExtension(extension, ExtensionHostKind.LocalProcess);
 
     editorRef.current = createConfiguredEditor(editorContainer.current, {
       folding: true,
-      language: languageId,
+      language: 'c',
       theme: 'vs',
       overviewRulerBorder: false, // 不要滚动条的边框
       scrollbar: {
@@ -130,14 +112,22 @@ const Editor = () => {
         enabled: false, // 是否启用预览图
       }, // 预览图设置
       automaticLayout: true,
-      model: model1.object.textEditorModel,
+      model: monaco.editor.createModel(
+        `
+function output = name(input)
+
+en
+`,
+        languageId,
+        monaco.Uri.file(URL3),
+      ),
     });
 
-    createWebSocket(
+    const webSocket = createWebSocket(
       createUrl(
         'localhost',
-        30002,
-        '/clangd',
+        30003,
+        '/matlab',
         {
           // Used to parse an auth token or additional parameters such as import IDs to the language server
           authorization: 'UserAuth',
@@ -153,7 +143,7 @@ const Editor = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', height: '100%', width: '100%' }}>
+    <>
       <div
         style={{
           height: '100%',
@@ -161,8 +151,8 @@ const Editor = () => {
         }}
         ref={editorContainer}
       ></div>
-    </div>
+    </>
   );
 };
 
-export default Editor;
+export { MEditor };

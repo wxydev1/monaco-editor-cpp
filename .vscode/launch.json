@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach to Server",
+      "type": "node",
+      "request": "attach",
+      "port": 9001,
+      "timeout": 20000,
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      
+    },
+    {
       "name": "Debug Main Process",
       "type": "node",
       "request": "launch",

@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
@@ -58,6 +59,17 @@ module.exports = {
     new webpack.DefinePlugin({
       URL1: JSON.stringify(path.join(process.cwd(), 'c-test/hello.c')),
       URL2: JSON.stringify(path.join(process.cwd(), 'c-test/hello.h')),
+      URL3: JSON.stringify(path.join(process.cwd(), 'c-test/main.c')),
+      content1: JSON.stringify(
+        fs.readFileSync(path.join(process.cwd(), 'c-test/hello.c'), {encoding: 'utf-8'}),
+      ),
+      content2: JSON.stringify(
+        fs.readFileSync(path.join(process.cwd(), 'c-test/hello.h'), {encoding: 'utf-8'}),
+      ),
+      content3: JSON.stringify(
+        fs.readFileSync(path.join(process.cwd(), 'c-test/main.c'), {encoding: 'utf-8'}),
+      ),
+      URL4: JSON.stringify(path.join(process.cwd(), 'm-test/a.m')),
     }),
   ],
 };

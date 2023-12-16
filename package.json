@@ -4,7 +4,13 @@
   "description": "",
   "scripts": {
     "start:server": "node dist/server.js",
-    "build": "webpack && webpack --config webpack.config.server.js"
+    "start:mserver": "node dist/mserver.js",
+    "build:server": "webpack --config webpack.config.server.js",
+    "build:client": "webpack",
+    "watch:client": "webpack --watch --progress",
+    "watch:server": "webpack --config webpack.config.server.js --watch --progress",
+    "watch": "run-p watch:server watch:client",
+    "build": "run-p build:server build:client"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +20,11 @@
     "@types/react-dom": "^17.0.5",
     "@types/vscode": "^1.84.2",
     "@types/ws": "^8.5.10",
+    "@types/yargs": "^17.0.32",
     "css-loader": "^5.2.6",
     "file-loader": "^6.2.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
+    "npm-run-all": "^4.1.5",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.1",
@@ -25,7 +33,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@codingame/monaco-vscode-configuration-service-override": "^1.83.13",
+    "@codingame/monaco-vscode-configuration-service-override": "^1.83.16",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
@@ -33,13 +41,17 @@
     "html-webpack-plugin": "^5.3.1",
     "monaco-editor": "npm:@codingame/monaco-editor-treemended@>=1.83.12 <1.84.0",
     "monaco-languageclient": "^7.1.0",
+    "patch-package": "^8.0.0",
     "path-browserify": "^1.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "vscode": "npm:@codingame/monaco-vscode-api@>=1.83.12 <1.84.0",
-    "vscode-languageserver": "~9.0.1",
+    "vscode": "npm:@codingame/monaco-vscode-api@>=1.83.12 <1.84.0","vscode-languageserver": "~9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11",
+    "vscode-uri": "^3.0.8",
     "vscode-ws-jsonrpc": "^3.1.0",
-    "ws": "^8.14.2"
+    "which": "^4.0.0",
+    "ws": "^8.14.2",
+    "yargs": "^17.5.1"
   },
   "overrides": {
     "monaco-editor": "$monaco-editor",
